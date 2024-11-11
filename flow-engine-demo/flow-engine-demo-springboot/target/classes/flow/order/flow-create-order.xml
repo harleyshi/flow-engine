@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<engine xmlns="http://www.w3school.com.cn"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.w3school.com.cn flow-engine.xsd">
+    <engineName name="createOrder"/>
+    <configParams>
+        <param name="paramsCheck">
+            {
+            "orderId": "123456789"
+            }
+        </param>
+        <param name="rollbackParamsCheck" desc="订单是否来自购物车"></param>
+    </configParams>
+
+    <script name="scriptTest">
+        System.out.println("invoke scriptTest");
+        int a = 1;
+        int b = 12;
+        boolean result = "123456".equals(ctx.orderId);
+        return true;
+    </script>
+
+    <pipeline name="createOrder" desc="创建订单流程">
+        <component operator="paramsCheck" params="paramsCheck" desc="参数检查" rollback="rollbackParamsCheck"/>
+        <pipeline name="getOrderInfo" desc="组装订单信息" async="true">
+            <component operator="queryGoodsInfo" desc="查询商品信息" rollback="rollbackQueryGoodsInfo"/>
+            <component operator="queryShipping" desc="查询运费信息"/>
+            <component operator="queryUserAddress" desc="查询用户地址信息"/>
+            <component operator="queryStoreInfo" desc="查询店铺信息"/>
+        </pipeline>
+        <if test="scriptTest" ignoreException="true">
+            <!--                    <if test="orderFromShoppingCart">-->
+            <then>
+                <component operator="removeCart" desc="移除购物车选中的商品"/>
+            </then>
+        </if>
+        <component operator="deductStock" desc="扣减库存(发生异常回滚库存)" rollback="releaseStock"/>
+        <component operator="builderOrderInfo" desc="构建订单信息"/>
+        <component operator="saveOrderInfo" desc="保存订单信息到数据库（包含子单）"/>
+        <component operator="syncOrderToEs" desc="同步订单到ES"/>
+        <component operator="saveOrderLog" desc="保存订单日志"/>
+
+    </pipeline>
+</engine>

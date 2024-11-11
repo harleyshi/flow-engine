@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.flow.engine.extension.springboot.configuration.FlowEngineAutoConfiguration
