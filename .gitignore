@@ -30,4 +30,4 @@
 *.log
 /tomcat.*
 /node_modules/
-/target/
+target/
