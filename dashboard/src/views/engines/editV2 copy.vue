@@ -27,20 +27,17 @@ import { ref, watch } from "vue";
 import { ElMessage } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
 import diamond from "./node/diamond.vue";  
-import business from "./node/business.vue";
-import request from "./node/request.vue";
-import response from "./node/response.vue";
+import circle from "./node/circle.vue";  
+import business from "./node/business.vue";  
 
 const router = useRouter();
 
 const data = [
-  { id: "1", type: "business", label: "Node 1", position: { x: 250, y: 5 }, connectable: true},
-  { id: "2", type: "diamond", label: "条件", position: { x: 250, y: 150 }, connectable: true},
-  { id: "3", type: "business", label: "Node 3", position: { x: 400, y: 100 }, connectable: true},
-  { id: "4", type: "business", label: "Node 4", position: { x: 400, y: 200 }, connectable: true},
-  { id: "5", type: "business", label: "Node 5", position: { x: 120, y: 260 }, connectable: true},
-  { id: "6", type: "request", label: "Node 4", position: { x: 400, y: 280 }, connectable: true},
-  { id: "7", type: "response", label: "Node 4", position: { x: 400, y: 360 }, connectable: true},
+  { id: "1", type: "business", label: "Node 1", position: { x: 250, y: 5 } },
+  { id: "2", type: "diamond", label: "条件", position: { x: 250, y: 150 } },
+  { id: "3", type: "business", label: "Node 3", position: { x: 400, y: 100 } },
+  { id: "4", type: "circle", label: "Node 4", position: { x: 400, y: 200 } },
+  { id: "5", type: "business", label: "Node 5", position: { x: 120, y: 260 } },
   { id: "e1-2", source: "1", target: "2", animated: true },
   { id: "e1-3", source: "1", target: "3" },
   { id: "e2-5", source: "2", target: "5" },
@@ -52,8 +49,7 @@ const elements = ref(data);
 // 定义节点类型
 const nodeTypes = ref({
   diamond: diamond,
-  request: request,
-  response: response,
+  circle: circle,
   business: business
 });
 
