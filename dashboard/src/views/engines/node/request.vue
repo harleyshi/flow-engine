@@ -1,20 +1,12 @@
 <template>
     <div class="node">
       <div class="node-label">request</div>
-      
-      <Handle
-        type="target"
-        position="top"
-        :id="`top-${id}`"
-        :style="handleStyle"
-        :isConnectable="true"
-      />
+    
       <Handle
         type="source"
         position="bottom"
         :id="`bottom-${id}`"
         :style="handleStyle"
-        :isConnectable="true"
       />
     </div>
 </template>
@@ -38,11 +30,11 @@
   
 <style scoped>
 .node {
-    position: relative;
     font-size: 10px;
     width: 70px;
     height: 24px;
-    background-color: #f5f2eb;
+    border: 1px solid #94e1e5;
+    background-color: rgb(175 232 255 / 40%);
     color: #333;
     text-align: center;
     line-height: 24px;
@@ -51,7 +43,12 @@
 }
   
 .node-label {
-    font-size: 10px;
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 2px;
+  padding-right: 2px;
 }
   
 </style>

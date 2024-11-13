@@ -7,14 +7,6 @@
       position="top"
       :id="`top-${id}`"
       :style="handleStyle"
-      :isConnectable="true"
-    />
-    <Handle
-      type="source"
-      position="bottom"
-      :id="`bottom-${id}`"
-      :style="handleStyle"
-      :isConnectable="true"
     />
   </div>
 </template>
@@ -38,20 +30,25 @@ const handleStyle = {
 
 <style scoped>
 .node {
-  position: relative;
   font-size: 10px;
-  width: 70px;
-  height: 24px;
-  background-color: #f5f2eb;
-  color: #333;
-  text-align: center;
-  line-height: 24px;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(180, 28, 28, 0.1);
+    width: 70px;
+    height: 24px;
+    border: 1px solid #94e1e5;
+    background-color: rgb(175 232 255 / 40%);
+    color: #333;
+    text-align: center;
+    line-height: 24px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(180, 28, 28, 0.1);
 }
 
 .node-label {
   font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 </style>

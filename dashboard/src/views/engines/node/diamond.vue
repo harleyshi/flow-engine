@@ -7,14 +7,12 @@
       position="top"
       :id="`top-${id}`"
       :style="handleStyleTop"
-      :isConnectable="true"
     />
     <Handle
       type="source"
       position="bottom"
       :id="`bottom-${id}`"
       :style="handleStyleBottom"
-      :isConnectable="true"
     />
   </div>
 </template>
@@ -49,7 +47,9 @@
 .diamond-node {
   width: 20px;
   height: 20px;
-  background-color: #ff7043;
+  border: 1px solid #94e1e5;
+  border: 1px solid #ffca28;
+  background-color: rgb(255 255 255 / 70%);
   color: #333;
   text-align: center;
   line-height: 20px;
@@ -62,5 +62,10 @@
 .diamond-label {
   font-size: 8px;
   transform: rotate(-45deg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 </style>

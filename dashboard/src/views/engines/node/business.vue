@@ -7,14 +7,12 @@
         position="top"
         :id="`top-${id}`"
         :style="handleStyle"
-        :isConnectable="true"
       />
       <Handle
         type="source"
         position="bottom"
         :id="`bottom-${id}`"
         :style="handleStyle"
-        :isConnectable="true"
       />
     </div>
 </template>
@@ -38,20 +36,26 @@
   
 <style scoped>
 .business-process-node {
-    position: relative;
-    font-size: 10px;
-    width: 70px;
-    height: 24px;
-    background-color: #ffca28;
-    color: #333;
-    text-align: center;
-    line-height: 24px;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-size: 10px;
+  width: 70px;
+  height: 24px;
+  border: 1px solid #ffca28;
+  background-color: rgb(255 255 255 / 70%);
+  color: #333;
+  text-align: center;
+  line-height: 24px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
 }
   
 .node-label {
-    font-size: 10px;
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 2px;
+  padding-right: 2px;
 }
   
 </style>

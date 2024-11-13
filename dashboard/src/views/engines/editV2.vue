@@ -22,7 +22,7 @@ import "@vue-flow/core/dist/theme-default.css";
 import "@/assets/bpmn.css";
 
 import { Background, Controls } from "@vue-flow/additional-components";
-import { VueFlow, useVueFlow } from "@vue-flow/core";
+import { VueFlow, useVueFlow, onNodeClick  } from "@vue-flow/core";
 import { ref, watch } from "vue";
 import { ElMessage } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
@@ -34,17 +34,24 @@ import response from "./node/response.vue";
 const router = useRouter();
 
 const data = [
-  { id: "1", type: "business", label: "Node 1", position: { x: 250, y: 5 }, connectable: true},
-  { id: "2", type: "diamond", label: "条件", position: { x: 250, y: 150 }, connectable: true},
-  { id: "3", type: "business", label: "Node 3", position: { x: 400, y: 100 }, connectable: true},
-  { id: "4", type: "business", label: "Node 4", position: { x: 400, y: 200 }, connectable: true},
-  { id: "5", type: "business", label: "Node 5", position: { x: 120, y: 260 }, connectable: true},
-  { id: "6", type: "request", label: "Node 4", position: { x: 400, y: 280 }, connectable: true},
-  { id: "7", type: "response", label: "Node 4", position: { x: 400, y: 360 }, connectable: true},
-  { id: "e1-2", source: "1", target: "2", animated: true },
+  { id: "0", type: "request", position: { x: 250, y: 10 }},
+
+  { id: "1", type: "business", label: "Node 11111111111111111", position: { x: 250, y: 70 }},
+  { id: "2", type: "diamond", label: "判断", position: { x: 150, y: 190 }},
+  { id: "3", type: "business", label: "Node 3", position: { x: 360, y: 160 }},
+  { id: "4", type: "business", label: "Node 4", position: { x: 380, y: 240 }},
+  { id: "5", type: "business", label: "Node 5", position: { x: 150, y: 260 }},
+
+  { id: "7", type: "response", position: { x: 250, y: 360 }},
+
+
+  { id: "e0-1", source: "0", target: "1", animated: true },
+  { id: "e1-2", source: "1", target: "2"},
   { id: "e1-3", source: "1", target: "3" },
   { id: "e2-5", source: "2", target: "5" },
   { id: "e3-4", source: "3", target: "4" },
+  { id: "e5-7", source: "5", target: "7" },
+  { id: "e4-7", source: "4", target: "7" },
 ];
 
 const elements = ref(data);
