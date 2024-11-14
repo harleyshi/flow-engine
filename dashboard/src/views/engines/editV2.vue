@@ -10,12 +10,28 @@
     </el-row>
 
     <div class="flow-container-wrapper">
+      <!-- 左侧面板：节点列表 -->
+      <div class="node-list-panel">
+        <h3>可拖拽节点</h3>
+        <div 
+          v-for="(node, index) in nodeList" 
+          :key="index" 
+          class="node-item" 
+          draggable="true"
+          @dragstart="handleDragStart($event, node)"
+        >
+          {{ node.label }}
+        </div>
+      </div>
+
       <VueFlow
         v-model="elements"
         fit-view-on-init
         class="flow-container"
         :node-types="nodeTypes"
         @node-click="handleNodeClick"
+        @drop="handleNodeDrop"
+        @dragover="handleDragOver"
       >
         <Background />
         <Controls />
@@ -52,8 +68,8 @@
 import "@vue-flow/core/dist/style.css";
 import "@vue-flow/core/dist/theme-default.css";
 import "@/assets/bpmn.css";
-
 import { Background, Controls } from "@vue-flow/additional-components";
+
 import { VueFlow, useVueFlow } from "@vue-flow/core";
 import { ref, watch } from "vue";
 import { ElMessage } from "element-plus";
@@ -64,6 +80,7 @@ import request from "./node/request.vue";
 import response from "./node/response.vue";
 
 const router = useRouter();
+const { onPaneReady, onNodeDragStop, onConnect, addEdges, setTransform, toObject, nodes, edges } = useVueFlow();
 
 const data = [
   { id: "0", type: "request", position: { x: 250, y: 10 }, customProperty: "默认属性" },
@@ -95,8 +112,13 @@ const nodeTypes = ref({
 // 选中的节点信息
 const selectedNode = ref(null);
 
-// VueFlow hook
-const { onNodeClick } = useVueFlow();
+// 可拖拽的节点列表
+const nodeList = ref([
+  { label: "请求节点", type: "request" },
+  { label: "业务节点", type: "business" },
+  { label: "判断节点", type: "diamond" },
+  { label: "响应节点", type: "response" }
+]);
 
 // 监听节点点击事件
 const handleNodeClick = (event: any) => {
@@ -104,7 +126,6 @@ const handleNodeClick = (event: any) => {
   selectedNode.value = node; // 设置选中的节点
 };
 
-const { onPaneReady, onNodeDragStop, onConnect, addEdges, setTransform, toObject, nodes, edges } = useVueFlow();
 
 onPaneReady(({ fitView }) => {
   fitView();
@@ -138,6 +159,44 @@ const toggleclass = () => nodes.value.forEach((el) => (el.class = el.class === "
 const goBack = () => {
   router.push("/engines/list");
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 拖拽开始事件，设置拖拽节点类型
+const handleDragStart = (event: DragEvent, node: any) => {
+  event.dataTransfer.setData("nodeType", node.type); // 保存节点类型
+};
+
+// 处理拖拽到画布区域的事件
+const handleDragOver = (event: DragEvent) => {
+  event.preventDefault(); // 防止默认行为，允许放置
+};
+
+// 拖拽放置事件，处理节点加入画布
+const handleNodeDrop = (event: DragEvent) => {
+  const nodeType = event.dataTransfer.getData("nodeType"); // 获取拖拽的节点类型
+  const newNode = {
+    id: `${Math.random()}`,  // 为新节点生成唯一ID
+    type: nodeType,  // 设置类型
+    position: { x: event.clientX - 100, y: event.clientY - 100 },  // 将位置设置为放置位置
+    label: nodeType === "business" ? "业务节点" : nodeType  // 设置默认标签
+  };
+  elements.value.push(newNode); // 将新节点添加到元素列表中
+  ElMessage.info(`新增节点: ${newNode.label}`);
+};
+
+
 </script>
 
 <style lang="less" scoped>
