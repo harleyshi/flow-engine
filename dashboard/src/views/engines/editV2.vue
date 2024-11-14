@@ -165,14 +165,6 @@ const goBack = () => {
 
 
 
-
-
-
-
-
-
-
-
 // 拖拽开始事件，设置拖拽节点类型
 const handleDragStart = (event: DragEvent, node: any) => {
   event.dataTransfer.setData("nodeType", node.type); // 保存节点类型
@@ -192,6 +184,7 @@ const handleNodeDrop = (event: DragEvent) => {
     position: { x: event.clientX - 100, y: event.clientY - 100 },  // 将位置设置为放置位置
     label: nodeType === "business" ? "业务节点" : nodeType  // 设置默认标签
   };
+  console.log( event.clientX - 100);
   elements.value.push(newNode); // 将新节点添加到元素列表中
   ElMessage.info(`新增节点: ${newNode.label}`);
 };
@@ -210,6 +203,31 @@ const handleNodeDrop = (event: DragEvent) => {
   margin: 10px;
   height: 700px;
   flex-grow: 1;
+}
+
+.node-list-panel {
+  width: 250px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  height: 600px;
+  overflow-y: auto;
+  margin-right: 20px;
+}
+
+.node-item {
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  border-radius: 4px;
+  text-align: center;
+  transition: background-color 0.3s;
+}
+
+.node-item:hover {
+  background-color: #eaeaea;
 }
 
 .info-panel {
