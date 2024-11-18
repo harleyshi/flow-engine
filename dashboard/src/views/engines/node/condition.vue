@@ -31,7 +31,7 @@
     borderRadius: "50%",
     
     backgroundColor: "black",
-    transform: "translate(-200%, -52%) rotate(43deg)",  // 调整到尖端位置
+    transform: "translate(-265%, -52%) rotate(43deg)",  // 调整到尖端位置
   };
 
   const handleStyleBottom = {
@@ -39,20 +39,20 @@
     height: "5px",
     borderRadius: "50%",
     backgroundColor: "black",
-    transform: "translate(100%, 50%) rotate(43deg)",  // 调整到尖端位置
+    transform: "translate(165%, 50%) rotate(43deg)",  // 调整到尖端位置
 };
   
 </script>
 
 <style scoped>
 .diamond-node {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   border: 1px solid #ffca28;
   background-color: rgb(255 255 255 / 70%);
   color: #333;
   text-align: center;
-  line-height: 20px;
+  line-height: 30px;
   transform: rotate(45deg);
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(99, 94, 94, 0.1);
@@ -65,7 +65,5 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding-left: 2px;
-  padding-right: 2px;
 }
 </style>

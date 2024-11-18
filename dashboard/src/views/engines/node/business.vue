@@ -37,13 +37,13 @@
 <style scoped>
 .business-process-node {
   font-size: 10px;
-  width: 70px;
-  height: 24px;
+  width: 100px;
+  height: 30px;
   border: 1px solid #ffca28;
   background-color: rgb(255 255 255 / 70%);
   color: #333;
   text-align: center;
-  line-height: 24px;
+  line-height: 30px;
   border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
