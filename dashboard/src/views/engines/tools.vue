@@ -1,41 +1,12 @@
-<script setup>
-import { Panel, useVueFlow } from '@vue-flow/core'
-import { ElMessage } from "element-plus";
-import Icon from '../../components/Icon.vue'
-
-const emit = defineEmits();
-
-// 定义触发事件的函数
-const triggerSaveEngine = () => {
-  // 触发 'save-engine' 事件
-  emit('save-engine');
-}
-
-const triggerLogToObject = () => {
-  // 触发 'log-to-object' 事件
-  emit('log-to-object');
-}
-
-const triggerGoBack = () => {
-  // 触发 'go-back' 事件
-  emit('go-back');
-}
-</script>
-
 <template>
   <Panel position="top-right">
     <div class="buttons">
-      <!-- 保存按钮 -->
       <button title="保存" @click="triggerSaveEngine">
         <Icon name="save" />
       </button>
-
-      <!-- 导出按钮 -->
       <button title="导出" @click="triggerLogToObject">
         <Icon name="download" />
       </button>
-
-      <!-- 返回按钮 -->
       <button title="返回" @click="triggerGoBack">
         <Icon name="return" />
       </button>
@@ -43,6 +14,23 @@ const triggerGoBack = () => {
   </Panel>
 </template>
 
+<script setup>
+import { Panel } from '@vue-flow/core'
+import Icon from '@/components/Icon.vue'
+const emit = defineEmits();
+
+const triggerSaveEngine = () => {
+  emit('save-engine');
+}
+
+const triggerLogToObject = () => {
+  emit('log-to-object');
+}
+
+const triggerGoBack = () => {
+  emit('go-back');
+}
+</script>
 
 <style scoped>
 .vue-flow__panel {

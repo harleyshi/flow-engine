@@ -15,8 +15,8 @@
         <el-col :span="6" v-if="isEdit">
           <el-form-item label="状态：">
             <el-radio-group v-model="form.status">
-              <el-radio label="published">发布</el-radio>
-              <el-radio label="unavailable">下架</el-radio>
+              <el-radio :value="'published'">发布</el-radio>
+              <el-radio :value="'unavailable'">下架</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
@@ -25,7 +25,7 @@
 
     <div class="flow-container-wrapper">
       <div class="node-list-panel">
-        <h3>特殊节点</h3>
+        <h3>动态脚本</h3>
         <div 
           v-for="(node, index) in nodeList" 
           :key="index" 
@@ -81,25 +81,41 @@
         <div class="panel-header">
           <h3>节点信息</h3>
         </div>
-        <el-form label-width="100px">
+        <el-form :model="selectedNode" label-width="80px">
           <el-form-item label="节点id">
             <span>{{ selectedNode.id }}</span>
           </el-form-item>
           <el-form-item label="节点名称">
             <span>{{ selectedNode.label }}</span>
           </el-form-item>
+
           <el-form-item label="节点类型">
             <span>{{ selectedNode.type }}</span>
           </el-form-item>
-          <el-form-item label="超时时间">
-            <el-input v-model="selectedNode.config.timeout" placeholder=""/>
+
+          <el-form-item v-if="selectedNode.type === 'condition'" label="脚本">
+            <el-input v-model="selectedNode.config.script" :rows="6" type="textarea" placeholder="请输入脚本"></el-input>
           </el-form-item>
-          <el-form-item label="是否忽略异常">
-            <el-input v-model="selectedNode.config.ignoreException" placeholder=""/>
-          </el-form-item>
-          <el-form-item label="是否异步">
-            <el-input v-model="selectedNode.config.async" placeholder=""/>
-          </el-form-item>
+
+          <template v-else>
+            <el-form-item label="超时时间">
+              <el-input v-model="selectedNode.config.timeout" placeholder=""/>
+            </el-form-item>
+
+            <el-form-item label="忽略异常">
+              <el-radio-group v-model="selectedNode.config.ignoreException">
+                <el-radio :value="true">是</el-radio>
+                <el-radio :value="false">否</el-radio>
+              </el-radio-group>
+            </el-form-item>
+
+            <el-form-item label="是否异步">
+              <el-radio-group v-model="selectedNode.config.async">
+                <el-radio :value="true">是</el-radio>
+                <el-radio :value="false">否</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </template> 
         </el-form>
         
         <!-- 底部按钮区域 -->
@@ -119,10 +135,11 @@
 import "@vue-flow/core/dist/style.css";
 import "@vue-flow/core/dist/theme-default.css";
 import "@/assets/bpmn.css";
+import "./edit.css";
+import { ref, markRaw, onMounted} from "vue";
 import { Background, Controls } from "@vue-flow/additional-components";
 import { VueFlow, useVueFlow, MarkerType } from "@vue-flow/core";
-import {engineDetail, operators, engineEdit } from '../../api/module/api';
-import { ref, markRaw, onMounted} from "vue";
+import {engineDetail, operators, engineEdit } from '@/api/module/api';
 import { ElMessage } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
 import ToolsControls from './tools.vue'
@@ -131,12 +148,25 @@ import Business from "./node/business.vue";
 
 const route = useRoute();
 const router = useRouter();
-const { onPaneReady, onNodeDragStop, onConnect, addEdges, setTransform, project, toObject, nodes, edges } = useVueFlow();
+const { onConnect, addEdges, project, toObject} = useVueFlow();
 
 const loading = ref(false);
 
-// 判断当前是编辑还是新增
 const isEdit = ref(false);
+// 算子列表和分页
+const operatorsList = ref([]);
+const searchName = ref('');
+const pageNo = ref(1);
+const pageSize = ref(10);
+const totalOperators = ref(0);
+
+// 画布数据
+const data = [];
+const elements = ref(data);
+
+// 选中的节点信息
+const selectedNode = ref(null);
+
 // 初始化表单数据
 const form = ref({
   id: null,
@@ -147,29 +177,17 @@ const form = ref({
   updateTime: null
 });
 
-const data = [];
-const elements = ref(data);
-
 // 定义节点类型
 const nodeTypes = ref({
   condition: markRaw(Condition),
   business: markRaw(Business)
 });
 
-// 选中的节点信息
-const selectedNode = ref(null);
-
 // 可拖拽的节点列表
 const nodeList = ref([
   { label: "条件节点", type: "condition"},
+  { label: "业务节点", type: "business"},
 ]);
-
-// 算子列表和分页
-const operatorsList = ref([]);
-const searchName = ref('');
-const pageNo = ref(1);
-const pageSize = ref(10);
-const totalOperators = ref(0);
 
 // 监听节点点击事件
 const handleNodeClick = (event: any) => {
@@ -177,10 +195,7 @@ const handleNodeClick = (event: any) => {
   selectedNode.value = node; // 设置选中的节点
 };
 
-onPaneReady(({ fitView }) => {
-  fitView();
-});
-
+// 连接事件
 onConnect((params) => {
   const { source, target, sourceHandle, targetHandle } = params;
 
@@ -199,13 +214,12 @@ onConnect((params) => {
     ElMessage.warning('不能连接相同位置类型的节点（bottom-to-bottom）');
     return;
   }
+  console.log(params);
 
   // 只有在连接符合规则时，才添加边
- // 添加边，并且指定边的类型
- addEdges([
+  addEdges([
     {
       ...params,
-      type: 'button',
       markerEnd: MarkerType.ArrowClosed,
     }
   ]);
@@ -288,12 +302,19 @@ const handleDragOver = (event: DragEvent) => {
 
 // 拖拽开始事件，设置拖拽节点类型
 const handleDragStart = (event: DragEvent, node: any, opsType: string) => {
-  if (opsType === '2') {
-    node.config = {
-      timeout: 0,
-      ignoreException: false,
-      async: false
-    };
+  if (opsType === '1') {
+    if (node.type === 'condition') {
+      node.config = {
+        script: ""
+      };
+    }else{
+      node.config = {
+        timeout: 0,
+        ignoreException: false,
+        async: false,
+        script: ""
+      };
+    }
   }
   event.dataTransfer.setData("nodeData", JSON.stringify(node)); 
 };
@@ -359,86 +380,5 @@ onMounted(() => {
   }
  
 });
-
 </script>
 
-
-
-<style lang="less" scoped>
-.flow-container-wrapper {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
-.flow-container {
-  margin: 10px;
-  height: 700px;
-  flex-grow: 1;
-}
-
-.node-list-panel {
-  width: 260px;
-  padding: 20px;
-  background-color: #f9f9f9;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  height: 650px;
-  overflow-y: auto;
-  margin-right: 20px;
-}
-
-.node-item {
-  width: 120px;
-  height: 20px;
-  line-height: 20px;
-  padding: 6px;
-  margin-bottom: 10px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  cursor: pointer;
-  border-radius: 4px;
-  text-align: center;
-  transition: background-color 0.3s;
-}
-
-.node-item:hover {
-  background-color: #eaeaea;
-}
-
-.info-panel {
-  position: fixed;
-  display: flex;    
-  flex-direction: column;
-  top: 180px;
-  right: 30px;
-  width: 300px;
-  height: 450px;
-  background-color: #f9f9f9;
-  padding: 10px;
-  box-shadow: 0 4px 20px rgba(163, 101, 101, 0.1);
-  border-radius: 4px;
-  z-index: 1000;
-}
-
-.node-btn-wrapper {
-  display: flex; 
-  justify-content: flex-end;
-  margin-top: auto;
-}
-
-.node-btn-wrapper button {
-  margin-right: 10px;
-  margin-bottom: 10px;
-}
-
-.el-form-item {
-  margin-bottom: 10px;
-}
-
-.panel-header {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 2px;
-  text-align: center;
-}
-</style>

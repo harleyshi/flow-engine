@@ -64,7 +64,7 @@
 
 <script lang="ts" setup>
 import { reactive, ref, onMounted } from "vue";
-import { engines, engineChangeStatus } from '../../api/module/api';
+import { engines, engineChangeStatus } from '@/api/module/api';
 import { VXETable } from "vxe-table";
 import { useRouter } from "vue-router";
 
@@ -85,7 +85,7 @@ const engineList = reactive<{
   loading: boolean;
   tableData: TableData[];
   total: number; // 用于存储总条目数
-}>({
+}>( {
   loading: false,
   tableData: [],
   total: 0, // 初始为 0
@@ -107,7 +107,7 @@ const loadTableData = async (engineName = "", pageNo = 1, pageSize = DEFAULT_PAG
     engineList.total = 0;
     if (result.code === '0000' && result.data && Array.isArray(result.data.records)) {
       // 从接口响应中获取数据
-      engineList.tableData = result.data.records.map((item: any) => ({
+      engineList.tableData = result.data.records.map((item: any) => ( {
         id: item.id,
         name: item.name,
         description: item.description,

@@ -64,6 +64,11 @@ public class OperatorsResp {
          * 是否异步
          */
         private Boolean async = Boolean.FALSE;
+
+        /**
+         * 脚本内容
+         */
+        private String script;
     }
 
     /**

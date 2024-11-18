@@ -15,13 +15,16 @@ const app = createApp(App);
 app.use(createPinia());
 app.use(router);
 app.use(VXETable);
+
 // element plus Icons
 for (const [name, comp] of Object.entries(ElementPlusIconsVue)) {
   app.component(name, comp);
 }
+
 // element plus
 app.use(ElementPlus);
 app.use(formCreate);
 app.use(FcDesigner);
 app.directive("print", Print);
+
 app.mount("#app");

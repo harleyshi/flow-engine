@@ -29,8 +29,9 @@
     width: "5px",
     height: "5px",
     borderRadius: "50%",
+    
     backgroundColor: "black",
-    transform: "translate(-200%, -50%)",  // 调整到尖端位置
+    transform: "translate(-200%, -52%) rotate(43deg)",  // 调整到尖端位置
   };
 
   const handleStyleBottom = {
@@ -38,7 +39,7 @@
     height: "5px",
     borderRadius: "50%",
     backgroundColor: "black",
-    transform: "translate(100%, 50%)",  // 调整到尖端位置
+    transform: "translate(100%, 50%) rotate(43deg)",  // 调整到尖端位置
 };
   
 </script>
@@ -47,7 +48,6 @@
 .diamond-node {
   width: 20px;
   height: 20px;
-  border: 1px solid #94e1e5;
   border: 1px solid #ffca28;
   background-color: rgb(255 255 255 / 70%);
   color: #333;
