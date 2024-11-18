@@ -42,7 +42,7 @@
     "vue-router": "^4.2.4",
     "vue3-pdfjs": "^0.1.6",
     "vue3-print-ts": "~0.3.1",
-    "vxe-table": "^4.3.9",
+    "vxe-table": "^4.8.10",
     "xe-utils": "^3.5.0",
     "zeebe-bpmn-moddle": "^1.1.0"
   },

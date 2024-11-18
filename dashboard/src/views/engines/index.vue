@@ -159,7 +159,7 @@ const addRowEvent = () => {
 
 // 新增按钮点击事件（新）
 const addRowEventV2 = () => {
-  router.push({ name: "enginesEditV2" });
+  router.push({ name: "addEngine" });
 };
 
 // 修改引擎状态（上架 / 下架）

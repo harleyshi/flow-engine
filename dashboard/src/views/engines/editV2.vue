@@ -10,16 +10,15 @@
     </el-row>
 
     <div class="flow-container-wrapper">
-      <!-- 左侧面板：节点列表 -->
+      
       <div class="node-list-panel">
-        <h3>可拖拽节点</h3>
+        <h3>特殊节点</h3>
         <div 
           v-for="(node, index) in nodeList" 
           :key="index" 
           class="node-item" 
           draggable="true"
-          @dragstart="handleDragStart($event, node)"
-        >
+          @dragstart="handleDragStart($event, node)">
           {{ node.label }}
         </div>
       </div>
@@ -71,42 +70,36 @@ import "@/assets/bpmn.css";
 import { Background, Controls } from "@vue-flow/additional-components";
 
 import { VueFlow, useVueFlow } from "@vue-flow/core";
-import { ref, watch } from "vue";
+import { ref, watch, markRaw } from "vue";
 import { ElMessage } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
-import diamond from "./node/diamond.vue";
+import condition from "./node/condition.vue";
 import business from "./node/business.vue";
-import request from "./node/request.vue";
-import response from "./node/response.vue";
 
 const router = useRouter();
 const { onPaneReady, onNodeDragStop, onConnect, addEdges, setTransform, toObject, nodes, edges } = useVueFlow();
 
 const data = [
-  { id: "0", type: "request", position: { x: 250, y: 10 }, customProperty: "默认属性" },
   { id: "1", type: "business", label: "Node 11111111111111111", position: { x: 250, y: 70 }, customProperty: "属性1" },
-  { id: "2", type: "diamond", label: "判断", position: { x: 150, y: 190 }, customProperty: "属性2" },
+  { id: "2", type: "condition", label: "判断", position: { x: 150, y: 190 }, customProperty: "属性2" },
   { id: "3", type: "business", label: "Node 3", position: { x: 360, y: 160 }, customProperty: "属性3" },
   { id: "4", type: "business", label: "Node 4", position: { x: 380, y: 240 }, customProperty: "属性4" },
   { id: "5", type: "business", label: "Node 5", position: { x: 150, y: 260 }, customProperty: "属性5" },
-  { id: "7", type: "response", position: { x: 250, y: 360 }, customProperty: "属性6" },
-  { id: "e0-1", source: "0", target: "1", animated: true },
+  { id: "6", type: "business", label: "Node 6", position: { x: 250, y: 350 }, customProperty: "属性6" },
   { id: "e1-2", source: "1", target: "2" },
   { id: "e1-3", source: "1", target: "3" },
   { id: "e2-5", source: "2", target: "5" },
   { id: "e3-4", source: "3", target: "4" },
-  { id: "e5-7", source: "5", target: "7" },
-  { id: "e4-7", source: "4", target: "7" }
+  { id: "e4-6", source: "4", target: "6" },
+  { id: "e5-6", source: "5", target: "6" },
 ];
 
 const elements = ref(data);
 
 // 定义节点类型
 const nodeTypes = ref({
-  diamond: diamond,
-  request: request,
-  response: response,
-  business: business
+  condition: markRaw(condition),
+  business: markRaw(business)
 });
 
 // 选中的节点信息
@@ -114,10 +107,7 @@ const selectedNode = ref(null);
 
 // 可拖拽的节点列表
 const nodeList = ref([
-  { label: "请求节点", type: "request" },
-  { label: "业务节点", type: "business" },
-  { label: "判断节点", type: "diamond" },
-  { label: "响应节点", type: "response" }
+  { label: "条件节点", type: "condition"},
 ]);
 
 // 监听节点点击事件
@@ -126,12 +116,9 @@ const handleNodeClick = (event: any) => {
   selectedNode.value = node; // 设置选中的节点
 };
 
-
 onPaneReady(({ fitView }) => {
   fitView();
 });
-
-onNodeDragStop((e) => console.log("drag stop", e));
 
 onConnect((params) => addEdges([params]));
 
@@ -184,7 +171,6 @@ const handleNodeDrop = (event: DragEvent) => {
     position: { x: event.clientX - 100, y: event.clientY - 100 },  // 将位置设置为放置位置
     label: nodeType === "business" ? "业务节点" : nodeType  // 设置默认标签
   };
-  console.log( event.clientX - 100);
   elements.value.push(newNode); // 将新节点添加到元素列表中
   ElMessage.info(`新增节点: ${newNode.label}`);
 };

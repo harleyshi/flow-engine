@@ -76,7 +76,7 @@ import { VueFlow, useVueFlow } from "@vue-flow/core";
 import { ref } from "vue";
 import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
-import diamond from "./node/diamond.vue";
+import diamond from "./node/condition.vue";
 import business from "./node/business.vue";
 import request from "./node/request.vue";
 import response from "./node/response.vue";
