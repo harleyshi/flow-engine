@@ -16,9 +16,6 @@
       <el-col :span="1.2">
         <el-button type="primary" @click="addRowEvent">新增</el-button>
       </el-col>
-      <el-col :span="1.2">
-        <el-button type="primary" @click="addRowEventV2">新增(新)</el-button>
-      </el-col>
     </el-row>
 
     <el-divider content-position="left">引擎列表</el-divider>
@@ -40,7 +37,7 @@
         <vxe-column field="content" title="内容"></vxe-column>
         <vxe-column title="操作" width="160">
           <template #default="{ row }">
-            <vxe-button @click="editRowEvent(row)" style="margin-right: 10px;">编辑</vxe-button>
+            <el-button @click="editRowEvent(row)" style="margin-right: 10px;">编辑</el-button>
             <span v-if="row.status === 'published'">
               <el-button type="danger" @click="changeEngineStatus(row.id, 'unavailable')" style="margin-bottom: 3px;">下架</el-button>
             </span>
@@ -155,11 +152,6 @@ const editRowEvent = (row: TableData) => {
 // 新增按钮点击事件
 const addRowEvent = () => {
   router.push({ name: "enginesEdit" });
-};
-
-// 新增按钮点击事件（新）
-const addRowEventV2 = () => {
-  router.push({ name: "addEngine" });
 };
 
 // 修改引擎状态（上架 / 下架）

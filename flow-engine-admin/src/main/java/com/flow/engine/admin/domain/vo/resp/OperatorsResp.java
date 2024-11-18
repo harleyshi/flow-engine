@@ -8,7 +8,7 @@ import lombok.Data;
  * @date 2024/10/28
  */
 @Data
-public class QueryOperatorsResp {
+public class OperatorsResp {
     /**
      * 节点id
      */

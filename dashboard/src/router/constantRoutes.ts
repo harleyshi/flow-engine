@@ -30,18 +30,6 @@ const routes: RouteRecordRaw[] = [
         component: () => import("@/views/engines/edit.vue"),
         meta: { title: "引擎编辑" },
       },
-      {
-        path: "engines/editV2",
-        name: "enginesEditV2",
-        component: () => import("@/views/engines/editV2.vue"),
-        meta: { title: "引擎编辑" },
-      },
-      {
-        path: "engines/add",
-        name: "addEngine",
-        component: () => import("@/views/engines/add.vue"),
-        meta: { title: "引擎编辑" },
-      }
     ]
   }
 ];

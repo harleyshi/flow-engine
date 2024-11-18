@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.flow.engine.admin.common.StatusEnum;
 import com.flow.engine.admin.domain.entity.FlowEngineDO;
 import com.flow.engine.admin.domain.vo.base.PageResp;
 import com.flow.engine.admin.domain.vo.req.EditFlowEngineReq;
@@ -54,6 +55,7 @@ public class FlowEngineServiceImpl extends ServiceImpl<FlowEngineMapper, FlowEng
         // 新增
         if(req.getId() == null){
             FlowEngineDO engineDO = BeanUtil.copyProperties(req, FlowEngineDO.class);
+            engineDO.setStatus(StatusEnum.UNAVAILABLE.getCode());
             baseMapper.insert(engineDO);
         }else{// 更新
             FlowEngineDO engineDO = BeanUtil.copyProperties(req, FlowEngineDO.class);

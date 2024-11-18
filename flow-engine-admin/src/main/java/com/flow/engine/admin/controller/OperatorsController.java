@@ -5,7 +5,7 @@ import com.flow.engine.admin.common.OpsNodeType;
 import com.flow.engine.admin.common.R;
 import com.flow.engine.admin.domain.vo.base.PageResp;
 import com.flow.engine.admin.domain.vo.req.QueryOperatorsReq;
-import com.flow.engine.admin.domain.vo.resp.QueryOperatorsResp;
+import com.flow.engine.admin.domain.vo.resp.OperatorsResp;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,19 +23,19 @@ import java.util.Random;
 public class OperatorsController {
 
     @GetMapping("/list")
-    public R<PageResp<QueryOperatorsResp>> list(QueryOperatorsReq req) {
+    public R<PageResp<OperatorsResp>> list(QueryOperatorsReq req) {
         log.info("OperatorsController list req: {}", JSON.toJSONString(req));
-        List<QueryOperatorsResp> list = new ArrayList<>();
+        List<OperatorsResp> list = new ArrayList<>();
         for (int i = 0; i < req.getPageSize(); i++) {
-            QueryOperatorsResp resp = new QueryOperatorsResp();
+            OperatorsResp resp = new OperatorsResp();
             resp.setType(OpsNodeType.BUSINESS.getCode());
             resp.setLabel("业务节点"+new Random().nextInt(10)+1);
-            QueryOperatorsResp.AdvancedConfig advancedConfig = new QueryOperatorsResp.AdvancedConfig();
+            OperatorsResp.AdvancedConfig advancedConfig = new OperatorsResp.AdvancedConfig();
             advancedConfig.setTimeout(new Random().nextInt(1000)+1);
             resp.setConfig(advancedConfig);
             list.add(resp);
         }
-        PageResp<QueryOperatorsResp> pageResp = new PageResp<>();
+        PageResp<OperatorsResp> pageResp = new PageResp<>();
         pageResp.setTotal(100L);
         pageResp.setRecords(list);
         return R.ok(pageResp);
