@@ -266,6 +266,9 @@ const handleSaveEngine = async () => {
   try {
     loading.value = true;
     const data = JSON.stringify(toObject());
+    if (!validateGraph(data)) {
+      return;
+    }
     form.value.content = data;
     let response = await engineEdit(form.value);
     const result = response.data;
@@ -286,7 +289,110 @@ const handleGoBack = () => {
   router.push("/engines/list");
 };
 
+/**
+ * 验证流程是否合法
+ * @param data 
+ */
+const validateGraph = (graphData: string) => {
+  let data;
+  try {
+    data = JSON.parse(graphData);
+  } catch (error) {
+    ElMessage.error("无效的图数据格式");
+    return false;
+  }
 
+  if (!data || !Array.isArray(data.nodes) || !Array.isArray(data.edges)) {
+    ElMessage.error("图数据缺少必要的 nodes 或 edges 属性");
+    return false;
+  }
+  const nodes = data.nodes;
+  const edges = data.edges;
+
+  // 创建一个节点ID集合
+  const nodeIds = new Set(nodes.map(node => node.id));
+  // 用来记录每个节点的出边和入边
+  const outgoingEdges = new Map();
+  const incomingEdges = new Map(); 
+
+  // 初始化出边和入边
+  nodes.forEach(node => {
+    outgoingEdges.set(node.id, []);
+    incomingEdges.set(node.id, []);
+  });
+
+  edges.forEach(edge => {
+    outgoingEdges.get(edge.source).push(edge.target);
+    incomingEdges.get(edge.target).push(edge.source); 
+  });
+
+  // 步骤 1：检查孤立节点（没有出边和入边的节点）
+  const isolatedNodes = [];
+  nodeIds.forEach(nodeId => {
+    if (outgoingEdges.get(nodeId).length === 0 && incomingEdges.get(nodeId).length === 0) {
+      isolatedNodes.push(nodeId);
+    }
+  });
+
+  if (isolatedNodes.length > 0) {
+    ElMessage.error(`不能有孤立节点，孤立节点 ID: ${isolatedNodes.join(", ")}`);
+    return false;
+  }
+
+  // 步骤 2：检查是否有环（深度优先搜索 DFS）
+  const visited = new Set();
+  // 用来记录递归栈中的节点
+  const recursionStack = new Set(); 
+
+  function hasCycle(nodeId) {
+    // 如果当前节点已经在递归栈中，说明找到了环
+    if (recursionStack.has(nodeId)) {
+      return true;
+    }
+    // 如果当前节点已经访问过，说明没有环
+    if (visited.has(nodeId)) {
+      return false;
+    }
+
+    // 标记当前节点为已访问，并将其加入递归栈
+    visited.add(nodeId);
+    recursionStack.add(nodeId);
+
+    // 检查当前节点的所有出边
+    const targets = outgoingEdges.get(nodeId);
+    for (let target of targets) {
+      if (hasCycle(target)) {
+        return true;
+      }
+    }
+
+    // 当前节点的递归结束后，移出递归栈
+    recursionStack.delete(nodeId);
+    return false;
+  }
+
+  // 遍历所有节点，检查是否有环
+  for (let nodeId of nodeIds) {
+    if (hasCycle(nodeId)) {
+      ElMessage.error(`存在环形依赖，问题节点: ${nodeId}`);
+      return false;
+    }
+  }
+
+  // 步骤 3：检查终端节点的数量（出度为0的节点）
+  const terminalNodes = [];
+  outgoingEdges.forEach((targets, nodeId) => {
+    if (targets.length === 0) {
+      terminalNodes.push(nodeId);
+    }
+  });
+
+  if (terminalNodes.length !== 1) {
+    ElMessage.error("终端节点数量不能超过1个");
+    return false;
+  }
+  return true;
+}
 
 
 /****************************节点操作相关函数********************/
@@ -314,7 +420,6 @@ const handleNodeClick = (event: any) => {
   const nodeIndex = elements.value.findIndex(node => node.id === targetNode.id);
   if (nodeIndex !== -1) {
     selectedNode.value = elements.value[nodeIndex];
-    console.log(elements.value[nodeIndex]);
   }
 };
 
