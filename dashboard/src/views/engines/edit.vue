@@ -266,6 +266,7 @@ const handleSaveEngine = async () => {
   try {
     loading.value = true;
     const data = JSON.stringify(toObject());
+    // 验证流程是否合法
     if (!validateGraph(data)) {
       return;
     }
