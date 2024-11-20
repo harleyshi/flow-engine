@@ -29,7 +29,7 @@ public class OperatorsController {
         for (int i = 0; i < req.getPageSize(); i++) {
             OperatorsResp resp = new OperatorsResp();
             if(i%2==0){
-                resp.setType(OpsNodeType.BUSINESS.getCode());
+                resp.setType(OpsNodeType.STANDARD.getCode());
             }else{
                 resp.setType(OpsNodeType.CONDITION.getCode());
                 if(i%3==0){

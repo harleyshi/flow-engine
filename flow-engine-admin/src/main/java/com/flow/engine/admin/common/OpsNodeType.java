@@ -8,7 +8,7 @@ import lombok.Getter;
  */
 @Getter
 public enum OpsNodeType {
-    BUSINESS("business", "业务节点"),
+    STANDARD("standard", "标准节点"),
 
     CONDITION("condition", "条件节点")
     ;

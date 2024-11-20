@@ -174,7 +174,7 @@ import { ElMessage } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
 import ToolsControls from './tools.vue'
 import Condition from "./node/condition.vue";
-import Business from "./node/business.vue";
+import Standard from "./node/standard.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -211,7 +211,7 @@ const form = ref({
 // 定义节点类型
 const nodeTypes = ref({
   condition: markRaw(Condition),
-  business: markRaw(Business)
+  standard: markRaw(Standard)
 });
 
 // 动态节点
