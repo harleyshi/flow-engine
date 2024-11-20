@@ -1,50 +1,73 @@
 <template>
   <div class="container">
-    <el-form :model="form" label-width="80px" v-loading="loading">
-      <el-row :gutter="20">
-        <el-col :span="6">
-          <el-form-item label="名称：">
-            <el-input class="short-input" v-model="form.name" placeholder="请输入名称"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="描述：">
-            <el-input class="long-input" v-model="form.description" placeholder="请输入描述"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6" v-if="isEdit">
-          <el-form-item label="状态：">
-            <el-radio-group v-model="form.status">
-              <el-radio :value="'published'">发布</el-radio>
-              <el-radio :value="'unavailable'">下架</el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form>
-
+    <div class="edit-container">
+      <el-form :model="form" label-width="80px" v-loading="loading">
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <el-form-item label="名称：">
+              <el-input class="short-input" v-model="form.name" placeholder="请输入名称"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="描述：">
+              <el-input class="long-input" v-model="form.description" placeholder="请输入描述"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6" v-if="isEdit">
+            <el-form-item label="状态：">
+              <el-radio-group v-model="form.status">
+                <el-radio :label="'published'">发布</el-radio>
+                <el-radio :label="'unavailable'">下架</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
     <div class="flow-container-wrapper">
       <div class="node-list-panel">
-        <h3>动态脚本</h3>
-        <div 
-          v-for="(node, index) in nodeList" 
-          :key="index" 
-          class="node-item" 
-          draggable="true"
-          @dragstart="handleDragStart($event, node, '1')">
-          {{ node.label }}
+        <div class="node-header">动态脚本</div>
+        <div class="node-container"
+            v-for="(node, index) in dynamicNodeList" 
+            :key="index" 
+            draggable="true"
+            @dragstart="handleDragStart($event, node, '1')"
+        >
+          <div class="node-item" >
+            {{ node.label }}
+          </div>
+          <div class="node-extra">
+            <select >
+              <option >groovy</option>
+            </select>
+          </div>
         </div>
+       
+        <div class="node-header">算子库列表</div>
+        <el-input v-model="searchName" placeholder="请输入算子名称搜索" class="input-with-select">
+          <template #append>
+            <el-button :icon="Search" @click="searchOperatorsByName"/>
+          </template>
+        </el-input>
 
-        <h3>算子列表</h3>
-        <div 
+        <div class="node-container"
           v-for="(node, index) in operatorsList" 
           :key="index" 
-          class="node-item" 
           draggable="true" 
           @dragstart="handleDragStart($event, node, '2')"
-        >
-          {{node.label}}
+          >
+          <div class="node-item">
+            {{node.label}}
+          </div>
+          <div class="node-extra">
+            <select >
+              <option >
+                {{ node.version }}
+              </option>
+            </select>
+          </div>
         </div>
+       
 
         <!-- 分页控件 -->
         <el-pagination
@@ -79,47 +102,53 @@
       <!-- 节点信息面板 -->
       <el-aside width="300px" class="info-panel" v-if="selectedNode">
         <div class="panel-header">
-          <h3>节点信息</h3>
+          节点信息
         </div>
         <el-form :model="selectedNode" label-width="80px">
-          <el-form-item label="节点id">
+          <el-form-item label="节点id：">
             <span>{{ selectedNode.id }}</span>
           </el-form-item>
-          <el-form-item label="节点名称">
+          <el-form-item label="节点名称:" v-if="selectedNode.isScript === true">
+            <el-input v-model="selectedNode.label"  placeholder="请输入名称"/>
+          </el-form-item>
+          <el-form-item label="节点名称:" v-else>
             <span>{{ selectedNode.label }}</span>
           </el-form-item>
 
-          <el-form-item label="节点类型">
+          <el-form-item label="节点类型:">
             <span>{{ selectedNode.type }}</span>
           </el-form-item>
 
-          <el-form-item v-if="selectedNode.type === 'condition'" label="脚本">
-            <el-input v-model="selectedNode.config.script" :rows="6" type="textarea" placeholder="请输入脚本"></el-input>
-          </el-form-item>
+          <div v-if="selectedNode.type === 'condition'">
+            <el-form-item v-if="selectedNode.isScript === true"  label="脚本">
+              <el-input  v-model="selectedNode.script" :rows="6" type="textarea" placeholder="请输入脚本"></el-input>
+            </el-form-item>
+          </div>
 
           <template v-else>
-            <el-form-item label="超时时间">
-              <el-input v-model="selectedNode.config.timeout" placeholder=""/>
+            <el-form-item label="超时时间:">
+              <el-input-number v-model="selectedNode.config.timeout" :step="1"/>
             </el-form-item>
 
-            <el-form-item label="忽略异常">
+            <el-form-item label="忽略异常:">
               <el-radio-group v-model="selectedNode.config.ignoreException">
-                <el-radio :value="true">是</el-radio>
-                <el-radio :value="false">否</el-radio>
+                <el-radio :label="true">是</el-radio>
+                <el-radio :label="false">否</el-radio>
               </el-radio-group>
             </el-form-item>
 
-            <el-form-item label="是否异步">
+            <el-form-item label="是否异步:">
               <el-radio-group v-model="selectedNode.config.async">
-                <el-radio :value="true">是</el-radio>
-                <el-radio :value="false">否</el-radio>
+                <el-radio :label="true">是</el-radio>
+                <el-radio :label="false">否</el-radio>
               </el-radio-group>
             </el-form-item>
+
           </template> 
         </el-form>
         
         <!-- 底部按钮区域 -->
-        <el-row class="node-btn-wrapper">
+        <el-row class="node-btn-wrapper" style="display: flex; justify-content: flex-end; align-items: flex-end; height: 100%;">
           <el-button type="primary" @click="closePanel">关闭</el-button>
           <el-button type="primary" @click="updateNodeData">确认</el-button>
         </el-row>
@@ -136,7 +165,8 @@ import "@vue-flow/core/dist/style.css";
 import "@vue-flow/core/dist/theme-default.css";
 import "@/assets/bpmn.css";
 import "./edit.css";
-import { ref, markRaw, onMounted} from "vue";
+import { Search } from '@element-plus/icons-vue'
+import { ref, markRaw, onMounted, nextTick } from "vue";
 import { Background, Controls } from "@vue-flow/additional-components";
 import { VueFlow, useVueFlow, MarkerType } from "@vue-flow/core";
 import {engineDetail, operators, engineEdit } from '@/api/module/api';
@@ -157,7 +187,7 @@ const isEdit = ref(false);
 const operatorsList = ref([]);
 const searchName = ref('');
 const pageNo = ref(1);
-const pageSize = ref(10);
+const pageSize = ref(15);
 const totalOperators = ref(0);
 
 // 画布数据
@@ -172,9 +202,10 @@ const form = ref({
   id: null,
   name: "",
   description: "",
+  script: "",
+  isScript: false,
   content: "",
-  status: "unavailable",
-  updateTime: null
+  status: "unavailable"
 });
 
 // 定义节点类型
@@ -183,53 +214,27 @@ const nodeTypes = ref({
   business: markRaw(Business)
 });
 
-// 可拖拽的节点列表
-const nodeList = ref([
+// 动态节点
+const dynamicNodeList = ref([
   { label: "条件节点", type: "condition"},
-  { label: "业务节点", type: "business"},
 ]);
-
-// 监听节点点击事件
-const handleNodeClick = (event: any) => {
-  const node = event.node;
-  selectedNode.value = node; // 设置选中的节点
-};
-
-// 连接事件
-onConnect((params) => {
-  const { source, target, sourceHandle, targetHandle } = params;
-
-  // 检查是否是自连接
-  if (source === target) {
-    ElMessage.warning('不能连接到自身');
-    return;
-  }
-  // 防止 top-to-top 连接
-  if (sourceHandle && targetHandle && sourceHandle.includes("top") && targetHandle.includes("top")) {
-    ElMessage.warning('不能连接相同位置类型的节点（top-to-top）');
-    return;
-  }
-  // 防止 bottom-to-bottom 连接
-  if (sourceHandle && targetHandle && sourceHandle.includes("bottom") && targetHandle.includes("bottom")) {
-    ElMessage.warning('不能连接相同位置类型的节点（bottom-to-bottom）');
-    return;
-  }
-  console.log(params);
-
-  // 只有在连接符合规则时，才添加边
-  addEdges([
-    {
-      ...params,
-      markerEnd: MarkerType.ArrowClosed,
-    }
-  ]);
-});
-
 
 // 查询属性
 const handleLogToObject = () => {
   ElMessage.info(JSON.stringify(toObject()));
 };
+
+onMounted(() => {
+  // 初始化获取算子列表
+  fetchOperators(searchName.value);
+
+  const engineId = route.query.id as string;
+  // 编辑
+  if (engineId) {
+    isEdit.value = true;
+    loadEngineData(engineId);
+  }
+});
 
 // 获取编辑页面时的初始数据
 const loadEngineData = async (id: string) => {
@@ -242,7 +247,6 @@ const loadEngineData = async (id: string) => {
       const content = result.data.content ? JSON.parse(result.data.content) : { nodes: [], edges: [] };
       const { nodes = [], edges = [] } = content;
       elements.value = [...nodes, ...edges];
-      
       if (nodes.length > 0) {
         const maxNodeId = Math.max(...nodes.map((node: { id: string }) => parseInt(node.id, 10)));
         nodeIdCounter = maxNodeId + 1; 
@@ -282,6 +286,10 @@ const handleGoBack = () => {
   router.push("/engines/list");
 };
 
+
+
+
+/****************************节点操作相关函数********************/
 // 关闭面板
 const closePanel = () => {
   selectedNode.value = null;
@@ -289,8 +297,54 @@ const closePanel = () => {
 
 // 修改节点信息
 const updateNodeData = () => {
-  
+  const updatedNode = selectedNode.value;
+  const nodeIndex = elements.value.findIndex(node => node.id === updatedNode.id);
+  if (nodeIndex !== -1) {
+    elements.value[nodeIndex] = { ...updatedNode }; 
+    ElMessage.success("节点信息已更新");
+  } else {
+    ElMessage.error("节点未找到");
+  }
+  selectedNode.value = null;
 };
+
+// 监听节点点击事件
+const handleNodeClick = (event: any) => {
+  const targetNode = event.node;
+  const nodeIndex = elements.value.findIndex(node => node.id === targetNode.id);
+  if (nodeIndex !== -1) {
+    selectedNode.value = elements.value[nodeIndex];
+    console.log(elements.value[nodeIndex]);
+  }
+};
+
+
+
+/****************************算子列表相关函数****************/
+const searchOperatorsByName = () => {
+  pageNo.value = 1;
+  fetchOperators(searchName.value);
+};
+
+// 获取算子数据
+const fetchOperators = async (searchName = "") => {
+  try {
+    const response = await operators(searchName, pageNo.value, pageSize.value);
+    operatorsList.value = response.data.data.records; // 更新算子列表
+    totalOperators.value = response.data.data.total; // 更新总数
+  } catch (error) {
+    ElMessage.error('获取算子列表失败');
+  }
+};
+
+// 处理分页变化
+const handlePageChange = (newPage: number) => {
+  pageNo.value = newPage;
+  fetchOperators(searchName.value); // 刷新数据
+};
+
+
+/********************** 画布事件处理 *********************/
 
 // 定义一个自增ID变量
 let nodeIdCounter = 1;
@@ -304,16 +358,10 @@ const handleDragOver = (event: DragEvent) => {
 const handleDragStart = (event: DragEvent, node: any, opsType: string) => {
   if (opsType === '1') {
     if (node.type === 'condition') {
-      node.config = {
-        script: ""
-      };
+      node.script = "";
+      node.isScript = true;
     }else{
-      node.config = {
-        timeout: 0,
-        ignoreException: false,
-        async: false,
-        script: ""
-      };
+      ElMessage.info(`不支持的操作`);
     }
   }
   event.dataTransfer.setData("nodeData", JSON.stringify(node)); 
@@ -323,6 +371,7 @@ const handleDragStart = (event: DragEvent, node: any, opsType: string) => {
 const handleNodeDrop = (event: DragEvent) => {
   const nodeDataStr = event.dataTransfer.getData("nodeData"); 
   const nodeData = JSON.parse(nodeDataStr);
+  
   // 获取鼠标在画布上的位置
   const { x: positionX, y: positionY } = getMousePositionOnCanvas(event, ".flow-container");
   const addNode = {
@@ -330,6 +379,8 @@ const handleNodeDrop = (event: DragEvent) => {
     type: nodeData.type,
     position: { x: positionX, y: positionY },
     label: nodeData.label,
+    isScript: nodeData.isScript,
+    script: nodeData.script,
     config: nodeData.config
   };
   elements.value.push(addNode);
@@ -350,35 +401,36 @@ const getMousePositionOnCanvas = (event: DragEvent, containerSelector: string) =
   return project({ x: mouseX, y: mouseY });
 };
 
-// 获取算子数据
-const fetchOperators = async () => {
-  try {
-    const response = await operators(searchName.value, pageNo.value, pageSize.value);
-    operatorsList.value = response.data.data.records; // 更新算子列表
-    totalOperators.value = response.data.data.total; // 更新总数
-  } catch (error) {
-    ElMessage.error('获取算子列表失败');
+// 连接事件
+onConnect((params) => {
+  const { source, target, sourceHandle, targetHandle } = params;
+
+  // 检查是否是自连接
+  if (source === target) {
+    ElMessage.warning('不能连接到自身');
+    return;
   }
-};
-
-// 处理分页变化
-const handlePageChange = (newPage: number) => {
-  pageNo.value = newPage;
-  fetchOperators(); // 刷新数据
-};
-
-
-onMounted(() => {
-  // 初始化获取算子列表
-  fetchOperators();
-
-  const engineId = route.query.id as string;
-  // 编辑
-  if (engineId) {
-    isEdit.value = true;
-    loadEngineData(engineId);
+  // 防止 top-to-top 连接
+  if (sourceHandle && targetHandle && sourceHandle.includes("top") && targetHandle.includes("top")) {
+    ElMessage.warning('不能连接相同位置类型的节点（top-to-top）');
+    return;
   }
- 
+  // 防止 bottom-to-bottom 连接
+  if (sourceHandle && targetHandle && sourceHandle.includes("bottom") && targetHandle.includes("bottom")) {
+    ElMessage.warning('不能连接相同位置类型的节点（bottom-to-bottom）');
+    return;
+  }
+  console.log(params);
+
+  // 只有在连接符合规则时，才添加边
+  addEdges([
+    {
+      ...params,
+      markerEnd: MarkerType.ArrowClosed,
+    }
+  ]);
 });
+
+
 </script>
 

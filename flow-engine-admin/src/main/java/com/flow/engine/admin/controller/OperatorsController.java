@@ -28,11 +28,19 @@ public class OperatorsController {
         List<OperatorsResp> list = new ArrayList<>();
         for (int i = 0; i < req.getPageSize(); i++) {
             OperatorsResp resp = new OperatorsResp();
-            resp.setType(OpsNodeType.BUSINESS.getCode());
-            resp.setLabel("业务节点"+new Random().nextInt(10)+1);
+            if(i%2==0){
+                resp.setType(OpsNodeType.BUSINESS.getCode());
+            }else{
+                resp.setType(OpsNodeType.CONDITION.getCode());
+                if(i%3==0){
+                    resp.setIsScript(true);
+                }
+            }
+            resp.setLabel(resp.getType()+"：节点-"+new Random().nextInt(10)+1);
             OperatorsResp.AdvancedConfig advancedConfig = new OperatorsResp.AdvancedConfig();
             advancedConfig.setTimeout(new Random().nextInt(1000)+1);
             resp.setConfig(advancedConfig);
+            resp.setVersion(new Random().nextInt(1000)+1+"");
             list.add(resp);
         }
         PageResp<OperatorsResp> pageResp = new PageResp<>();

@@ -26,6 +26,16 @@ public class OperatorsResp {
     private String type;
 
     /**
+     * 是否是脚本
+     */
+    private Boolean isScript = Boolean.FALSE;
+
+    /**
+     * 脚本内容
+     */
+    private String script;
+
+    /**
      * 配置参数
      */
     private AdvancedConfig config;
@@ -34,6 +44,11 @@ public class OperatorsResp {
      * 节点坐标
      */
     private Position position;
+
+    /**
+     * 版本号
+     */
+    private String version;
 
     /**
      * 高级配置
@@ -65,10 +80,6 @@ public class OperatorsResp {
          */
         private Boolean async = Boolean.FALSE;
 
-        /**
-         * 脚本内容
-         */
-        private String script;
     }
 
     /**
