@@ -26,7 +26,7 @@
     </div>
     <div class="flow-container-wrapper">
       <div class="node-list-panel">
-        <div class="node-header">动态脚本</div>
+        <div class="node-header">通用节点</div>
         <div class="node-container"
             v-for="(node, index) in dynamicNodeList" 
             :key="index" 
@@ -35,11 +35,6 @@
         >
           <div class="node-item" >
             {{ node.label }}
-          </div>
-          <div class="node-extra">
-            <select >
-              <option >groovy</option>
-            </select>
           </div>
         </div>
        
@@ -57,7 +52,7 @@
           @dragstart="handleDragStart($event, node, '2')"
           >
           <div class="node-item">
-            {{node.label}}
+            {{node.label}} ({{node.type}})
           </div>
           <div class="node-extra">
             <select >
@@ -68,7 +63,6 @@
           </div>
         </div>
        
-
         <!-- 分页控件 -->
         <el-pagination
           v-if="totalOperators > 0"
@@ -124,6 +118,8 @@
               <el-input  v-model="selectedNode.script" :rows="6" type="textarea" placeholder="请输入脚本"></el-input>
             </el-form-item>
           </div>
+          
+          <div v-else-if="selectedNode.type ==='start' || selectedNode.type === 'end'"></div>
 
           <template v-else>
             <el-form-item label="超时时间:">
@@ -175,7 +171,8 @@ import { useRoute, useRouter } from "vue-router";
 import ToolsControls from './tools.vue'
 import Condition from "./node/condition.vue";
 import Standard from "./node/standard.vue";
-
+import Start from "./node/start.vue";
+import End from "./node/end.vue";
 const route = useRoute();
 const router = useRouter();
 const { onConnect, addEdges, project, toObject} = useVueFlow();
@@ -211,12 +208,16 @@ const form = ref({
 // 定义节点类型
 const nodeTypes = ref({
   condition: markRaw(Condition),
-  standard: markRaw(Standard)
+  standard: markRaw(Standard),
+  start: markRaw(Start),
+  end: markRaw(End)
 });
 
 // 动态节点
 const dynamicNodeList = ref([
   { label: "条件节点", type: "condition"},
+  { label: "开始节点", type: "start"},
+  { label: "结束节点", type: "end"},
 ]);
 
 // 查询属性
@@ -466,6 +467,20 @@ const handleDragStart = (event: DragEvent, node: any, opsType: string) => {
     if (node.type === 'condition') {
       node.script = "";
       node.isScript = true;
+    }else if (node.type === 'start') {
+      node.isScript = false;
+      node.config = {
+        timeout: 0,
+        ignoreException: false,
+        async: false
+      };
+    }else if (node.type === 'end') {
+      node.isScript = false;
+      node.config = {
+        timeout: 0,
+        ignoreException: false,
+        async: false
+      };
     }else{
       ElMessage.info(`不支持的操作`);
     }
@@ -481,7 +496,7 @@ const handleNodeDrop = (event: DragEvent) => {
   // 获取鼠标在画布上的位置
   const { x: positionX, y: positionY } = getMousePositionOnCanvas(event, ".flow-container");
   const addNode = {
-    id: `${nodeIdCounter++}`,
+    id: generateNodeId(nodeData),
     type: nodeData.type,
     position: { x: positionX, y: positionY },
     label: nodeData.label,
@@ -492,6 +507,23 @@ const handleNodeDrop = (event: DragEvent) => {
   elements.value.push(addNode);
   ElMessage.info(`新增节点: ${addNode.label}`);
 };
+
+// 生成节点ID
+const generateNodeId = (nodeData) => {
+  let nodeId;
+  switch (nodeData.type) {
+    case 'start':
+      nodeId = '0';
+      break;
+    case 'end':
+      nodeId = '99999999';
+      break;
+    default:
+      nodeId = `${nodeIdCounter++}`;
+      break;
+  }
+  return nodeId;
+}
 
 // 获取鼠标在画布上的位置
 const getMousePositionOnCanvas = (event: DragEvent, containerSelector: string) => {
@@ -533,6 +565,7 @@ onConnect((params) => {
     {
       ...params,
       markerEnd: MarkerType.ArrowClosed,
+
     }
   ]);
 });

@@ -8,11 +8,12 @@ import lombok.Getter;
  */
 @Getter
 public enum NodeType {
-    ENGINE("engine", "引擎节点"),
 
-    ENGINE_NAME("engineName", "引擎名称节点"),
+//    ENGINE("engine", "引擎节点"),
 
-    PIPELINE("pipeline", "流程节点"),
+//    ENGINE_NAME("engineName", "引擎名称节点"),
+
+//    PIPELINE("pipeline", "流程节点"),
 
     IF("if", "条件节点"),
 
@@ -20,7 +21,7 @@ public enum NodeType {
 
     COMPONENT("component", "组件节点"),
 
-    CONFIG_PARAMS("configParams", "配置参数节点"),
+//    CONFIG_PARAMS("configParams", "配置参数节点"),
 
     SCRIPT("script", "脚本节点")
     ;

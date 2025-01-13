@@ -1,8 +1,9 @@
 package com.flow.engine.demo.controller;
 
-import com.flow.engine.FlowExecutor;
-import com.flow.engine.FlowExecutorRegister;
+import com.flow.engine.DAGEngineRegister;
 import com.flow.engine.demo.context.OrderContext;
+import com.flow.engine.executor.DAGEngine;
+import com.flow.engine.executor.IExecutor;
 import com.flow.engine.model.FlowCtx;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.commons.compiler.CompileException;
@@ -22,24 +23,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/order")
 public class OrderController {
 
-    private final FlowExecutorRegister flowExecutorRegister =FlowExecutorRegister.getInstance();
+    private final DAGEngineRegister dagEngineRegister = DAGEngineRegister.getInstance();
 
     @GetMapping("/create")
     public String create() {
         // 执行业务逻辑
-        FlowExecutor<FlowCtx> flowExecutor = flowExecutorRegister.get("createOrder");
-        if(flowExecutor == null){
+        DAGEngine<FlowCtx> dagEngine = dagEngineRegister.getEngine("createOrder");
+        if(dagEngine == null){
             return "failed";
         }
         OrderContext ctx = new OrderContext();
         ctx.setOrderId("123456");
         ctx.setOrderName("测试订单");
-        flowExecutor.execute(ctx);
+
+//        dagEngine.printGraph();
+
+        // 串行
+        IExecutor<FlowCtx> executor = dagEngine.buildExecutor(3);
+        // 并行
+//        IExecutor<FlowCtx> executor = dagEngine.buildExecutor(1);
+
+        executor.execute(ctx);
 
         return ctx.toString();
     }
 
     private static final ExpressionEvaluator EXPRESSION_EVALUATOR = new ExpressionEvaluator();
+
     static {
         EXPRESSION_EVALUATOR.setParameters(new String[] { "a", "b" }, new Class[] { int.class, int.class });
         EXPRESSION_EVALUATOR.setExpressionType(int.class);

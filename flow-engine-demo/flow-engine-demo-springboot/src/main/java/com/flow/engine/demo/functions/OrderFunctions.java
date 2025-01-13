@@ -10,6 +10,7 @@ import com.flow.engine.demo.mapper.TestAMapper;
 import com.flow.engine.demo.mapper.TestBMapper;
 import com.flow.engine.demo.mapper.TestCMapper;
 import com.flow.engine.operator.ComponentFn;
+import com.flow.engine.operator.Condition;
 import com.flow.engine.operator.Operator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,15 +32,15 @@ public class OrderFunctions {
     @ComponentFn(name = "saveOrderInfo")
     public Operator<OrderContext> saveOrderInfo(String config){
         return (ctx) -> {
-            transactionTemplate.execute(status -> {
-                testAMapper.insert(new TestADO("testA"));
-                testBMapper.insert(new TestBDO("testB"));
-                int i = 1 / 0;
-                testCMapper.insert(new TestCDO("testC"));
-
-                return true;
-            });
-
+//            System.out.println("invoke saveOrderInfo");
+//            transactionTemplate.execute(status -> {
+//                testAMapper.insert(new TestADO("testA"));
+//                testBMapper.insert(new TestBDO("testB"));
+//                int i = 1 / 0;
+//                testCMapper.insert(new TestCDO("testC"));
+//
+//                return true;
+//            });
         };
     }
 
@@ -60,7 +61,7 @@ public class OrderFunctions {
     public Operator<OrderContext> rollbackParamsCheck(ParamsCheck params){
         System.out.println("rollbackParamsCheck 初始化配置参数："+ JSON.toJSONString(params));
         return  (ctx) -> {
-            System.out.println("invoke rollbackParamsCheck");
+//            System.out.println("invoke rollbackParamsCheck");
             
         };
     }
@@ -69,7 +70,7 @@ public class OrderFunctions {
     public Operator<OrderContext> paramsCheck(ParamsCheck params){
         System.out.println("paramsCheck 初始化配置参数："+ JSON.toJSONString(params));
         return  (ctx) -> {
-            System.out.println("invoke paramsCheck");
+//            System.out.println("invoke paramsCheck");
             
         };
     }
@@ -77,7 +78,7 @@ public class OrderFunctions {
     @ComponentFn(name = "queryGoodsInfo")
     public Operator<OrderContext> queryGoodsInfo(String config){
         return (ctx) -> {
-            System.out.println("invoke queryGoodsInfo");
+//            System.out.println("invoke queryGoodsInfo");
             
         };
     }
@@ -85,7 +86,7 @@ public class OrderFunctions {
     @ComponentFn(name = "rollbackQueryGoodsInfo")
     public Operator<OrderContext> rollbackQueryGoodsInfo(String config){
         return (ctx) -> {
-            System.out.println("invoke rollbackQueryGoodsInfo");
+//            System.out.println("invoke rollbackQueryGoodsInfo");
             
         };
     }
@@ -93,15 +94,7 @@ public class OrderFunctions {
     @ComponentFn(name = "queryShipping")
     public Operator<OrderContext> queryShipping(String config){
         return (ctx) -> {
-            System.out.println("invoke queryShipping");
-            
-        };
-    }
-
-    @ComponentFn(name = "queryUserAddress")
-    public Operator<OrderContext> queryUserAddress(String config){
-        return (ctx) -> {
-            System.out.println("invoke queryUserAddress");
+//            System.out.println("invoke queryShipping");
             
         };
     }
@@ -109,7 +102,7 @@ public class OrderFunctions {
     @ComponentFn(name = "queryStoreInfo")
     public Operator<OrderContext> queryStoreInfo(String config){
         return (ctx) -> {
-            System.out.println("invoke queryStoreInfo");
+//            System.out.println("invoke queryStoreInfo");
             
         };
     }
@@ -117,8 +110,22 @@ public class OrderFunctions {
     @ComponentFn(name = "deductStock")
     public Operator<OrderContext> deductStock(String config){
         return (ctx) -> {
-            System.out.println("invoke deductStock");
+//            System.out.println("invoke deductStock");
             
+        };
+    }
+
+
+
+    @ComponentFn(name = "queryUserAddress")
+    public Operator<OrderContext> queryUserAddress(String config){
+        return (ctx) -> {
+            System.out.println("invoke queryUserAddress");
+            try {
+//                Thread.sleep(34);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         };
     }
 
@@ -126,41 +133,11 @@ public class OrderFunctions {
     public Operator<OrderContext> releaseStock(String config){
         return (ctx) -> {
             System.out.println("invoke releaseStock");
-            
-        };
-    }
-
-    @ComponentFn(name = "builderOrderInfo")
-    public Operator<OrderContext> builderOrderInfo(String config){
-        return (ctx) -> {
-            System.out.println("invoke builderOrderInfo");
-            
-        };
-    }
-
-    @ComponentFn(name = "syncOrderToEs")
-    public Operator<OrderContext> syncOrderToEs(String config){
-        return (ctx) -> {
-            System.out.println("invoke syncOrderToEs");
-            
-        };
-    }
-
-
-    @ComponentFn(name = "saveOrderLog")
-    public Operator<OrderContext> saveOrderLog(String config){
-        return (ctx) -> {
-            System.out.println("invoke saveOrderLog");
-            
-        };
-    }
-
-
-    @ComponentFn(name = "removeCart")
-    public Operator<OrderContext> removeCart(String config){
-        return (ctx) -> {
-            System.out.println("invoke removeCart");
-            
+            try {
+//                Thread.sleep(25);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         };
     }
 
@@ -169,6 +146,51 @@ public class OrderFunctions {
     public Operator<OrderContext> sendDelayMq(String config){
         return (ctx) -> {
             System.out.println("invoke sendDelayMq");
+            try {
+//                Thread.sleep(30);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        };
+    }
+
+    @ComponentFn(name = "builderOrderInfo")
+    public Operator<OrderContext> builderOrderInfo(String config){
+        return (ctx) -> {
+//            System.out.println("invoke builderOrderInfo");
+            
+        };
+    }
+
+    @ComponentFn(name = "syncOrderToEs")
+    public Operator<OrderContext> syncOrderToEs(String config){
+        return (ctx) -> {
+//            System.out.println("invoke syncOrderToEs");
+            
+        };
+    }
+
+//    @ComponentFn(name = "isSyncOrderToEs")
+//    public Condition<Boolean, OrderContext> isSyncOrderToEs(){
+//        return (ctx) -> {
+//            System.out.println("invoke isSyncOrderToEs");
+//            return true;
+//        };
+//    }
+
+    @ComponentFn(name = "saveOrderLog")
+    public Operator<OrderContext> saveOrderLog(String config){
+        return (ctx) -> {
+//            System.out.println("invoke saveOrderLog");
+            
+        };
+    }
+
+
+    @ComponentFn(name = "removeCart")
+    public Operator<OrderContext> removeCart(String config){
+        return (ctx) -> {
+//            System.out.println("invoke removeCart");
             
         };
     }
@@ -176,7 +198,7 @@ public class OrderFunctions {
     @ComponentFn(name = "orderFromShoppingCart")
     public Operator<OrderContext> orderFromShoppingCart(String config){
         return (ctx) -> {
-            System.out.println("invoke orderFromShoppingCart");
+//            System.out.println("invoke orderFromShoppingCart");
             
         };
     }

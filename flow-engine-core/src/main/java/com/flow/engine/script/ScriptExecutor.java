@@ -2,6 +2,7 @@ package com.flow.engine.script;
 
 import com.flow.engine.common.enums.ScriptLang;
 import com.flow.engine.model.FlowCtx;
+import com.flow.engine.component.IComponent;
 import lombok.Data;
 
 /**
@@ -9,7 +10,7 @@ import lombok.Data;
  * @date 2024/10/29
  */
 @Data
-public abstract class ScriptExecutor<T, C extends FlowCtx> implements Describable {
+public abstract class ScriptExecutor<T, C extends FlowCtx> implements IComponent<T, C>, Describable {
     /**
      * 脚本名称
      */

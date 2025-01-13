@@ -43,17 +43,21 @@ public class Parallel {
     }
 
     /**
-     * 获取一个线程池
-     * @param name
-     * @return
+     * 获取一个线程池执行器
      */
-    public static Executor getExecutor(String name) {
+    public static ExecutorService getExecutor(String name) {
         return threadPool.executor(name);
     }
 
     /**
+     * 提交任务到线程池执行
+     */
+    public static <T> Future<T> submit(Callable<T> task) {
+        return threadPool.executor(ThreadPool.Names.KERNEL).submit(task);
+    }
+
+    /**
      * 线程池当前状态
-     * @return
      */
     public static ThreadPoolStats stats() {
         return threadPool.stats();

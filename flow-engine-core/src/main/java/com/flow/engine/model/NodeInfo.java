@@ -1,44 +1,38 @@
-package com.flow.engine.admin.domain.vo.resp;
+package com.flow.engine.model;
 
-import com.flow.engine.admin.common.OpsNodeType;
 import lombok.Data;
 
 /**
  * @author harley.shi
- * @date 2024/10/28
+ * @date 2024/11/20
  */
 @Data
-public class OperatorsResp {
+public class NodeInfo {
     /**
      * 节点id
      */
-    private Long id;
+    private String id;
 
     /**
-     * 组件名称
+     * 节点名称
      */
     private String label;
 
     /**
      * 节点类型
-     * @see OpsNodeType
+     * @see com.flow.engine.common.enums.NodeTypeEnums
      */
     private String type;
 
     /**
-     * 是否是脚本
+     * 脚本信息（节点类型是脚本节点是用）
      */
-    private Boolean isScript = Boolean.FALSE;
+    private ScriptInfo scriptInfo;
 
     /**
-     * 脚本内容
+     * 节点配置
      */
-    private String script;
-
-    /**
-     * 配置参数
-     */
-    private AdvancedConfig config;
+    private NodeConfig config;
 
     /**
      * 节点坐标
@@ -46,24 +40,39 @@ public class OperatorsResp {
     private Position position;
 
     /**
-     * 版本号
+     * 节点版本号
      */
     private String version;
+
+    public NodeInfo() {
+    }
+
+    public NodeInfo(String id) {
+        this.id = id;
+    }
+
+    @Data
+    public static class ScriptInfo{
+        /**
+         * 脚本语言
+         */
+        private String scriptLang;
+
+        /**
+         * 脚本内容
+         */
+        private String content;
+    }
 
     /**
      * 高级配置
      */
     @Data
-    public static class AdvancedConfig{
+    public static class NodeConfig{
         /**
          * 算子参数
          */
         private String params;
-
-        /**
-         * 回滚算子参数
-         */
-        private String rollbackParams;
 
         /**
          * 超时时间
@@ -90,11 +99,11 @@ public class OperatorsResp {
         /**
          * x坐标
          */
-        private Integer x;
+        private Float x;
 
         /**
          * y坐标
          */
-        private Integer y;
+        private Float y;
     }
 }

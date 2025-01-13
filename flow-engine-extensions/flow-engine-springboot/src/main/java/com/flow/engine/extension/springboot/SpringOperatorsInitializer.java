@@ -59,7 +59,7 @@ public class SpringOperatorsInitializer implements SmartInitializingSingleton, A
             }
         }
 
-        // 初始化脚本引擎
+        // init dag engine
         flowReader.load();
     }
 
